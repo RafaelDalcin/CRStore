@@ -50,7 +50,7 @@ const register = async (req, res) => {
 
     return res.status(200).send({
       type: 'success',
-      message: 'Usuário cadastrastado com sucesso!',
+      message: 'Usuário cadastrado com sucesso!',
       data: response
     });
   } catch (error) {
