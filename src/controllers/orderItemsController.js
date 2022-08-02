@@ -1,10 +1,10 @@
-import Item from "../models/Item";
+import OrderItem from "../models/OrderItem";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const getAll = async (req, res) => {
   try {
-    const response = await Item.findAll({
+    const response = await OrderItem.findAll({
       order: [['id', 'ASC']]
     });
     return res.status(200).send({
@@ -33,27 +33,25 @@ const getById = async (req, res) => {
       });
     }
 
-    let item = await Item.findOne({
+    let orderItem = await OrderItem.findOne({
       where: {
         id
       }
     });
 
-    if (!item) {
+    if (!orderItem) {
       return res.status(400).send({
         message: `Não foi possível encontrar o método de pagamento com o ID ${id}`
       });
     }
 
-    return res.status(200).send(item);
+    return res.status(200).send(address);
   } catch (error) {
-    console.log('oi');
     return res.status(500).send({
       message: error.message
     })
   }
 }
-
 
 const persist = async (req, res) => {
   try {
@@ -73,10 +71,10 @@ const persist = async (req, res) => {
 
 const create = async (dados, res) => {
   try {
-    let { name, price, idCategory } = dados;
+    let { amount, price, idOrder, idItem } = dados;
 
-    let response = await Item.create({
-      name, price, idCategory
+    let response = await OrderItem.create({
+      amount, price, idOrder, idItem 
     });
 
     return res.status(200).send({
@@ -94,25 +92,25 @@ const create = async (dados, res) => {
 }
 
 const update = async (id, dados, res) => {
-  let { name, price, idCategory  } = dados;
-  let item = await Item.findOne({
+  let { amount, price, idOrder, idItem  } = dados;
+  let orderItem = await OrderItem.findOne({
     where: {
       id
     }
   });
 
-  if (!item) {
+  if (!orderItem) {
     return res.status(400).send({ type: 'error', message: `Método de pagamento com o ID ${id} inexistente` })
   }
 
   //TODO: desenvolver uma lógica pra validar todos os campos
   //que vieram para atualizar e entao atualizar
-  Object.keys(dados).forEach(field => item[field] = dados[field]);
+  Object.keys(dados).forEach(field => orderItem[field] = dados[field]);
 
-  await item.save();
+  await orderItem.save();
   return res.status(200).send({
     message: `Método de pagamento ${id} atualizado com sucesso`,
-    data: item
+    data: orderItem
   });
 }
 
@@ -127,17 +125,17 @@ const destroy = async (req, res) => {
       });
     }
 
-    let item = await Item.findOne({
+    let orderItem = await OrderItem.findOne({
       where: {
         id,
       }
     });
 
-    if (!item) {
+    if (!orderItem) {
       return res.status(400).send({ message: `Não foi encontrado nenhum método de pagamento com o ID ${id}` })
     }
 
-    await item.destroy();
+    await orderItem.destroy();
     return res.status(200).send({
       message: `Método de pagamento informado foi deletado com sucesso`
     })

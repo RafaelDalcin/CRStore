@@ -41,7 +41,7 @@ const getById = async (req, res) => {
 
     if (!paymentForm) {
       return res.status(400).send({
-        message: `Não foi possível encontrar a categoria com o ID ${id}`
+        message: `Não foi possível encontrar o método de pagamento com o ID ${id}`
       });
     }
 
@@ -82,7 +82,7 @@ const create = async (dados, res) => {
     if (paymentFormExists) {
       return res.status(200).send({
         type: 'error',
-        message: 'Já existe uma categoria cadastrada com esse nome!'
+        message: 'Já existe um método de pagamento cadastrado com esse nome!'
       });
     }
 
@@ -92,7 +92,7 @@ const create = async (dados, res) => {
 
     return res.status(200).send({
       type: 'success',
-      message: 'Categoria cadastrada com sucesso!',
+      message: 'Método cadastrado com sucesso!',
       data: response
     });
   } catch (error) {
@@ -113,7 +113,7 @@ const update = async (id, dados, res) => {
   });
 
   if (!paymentForm) {
-    return res.status(400).send({ type: 'error', message: `Categoria com o ID ${id} inexistente` })
+    return res.status(400).send({ type: 'error', message: `Método de pagamento com o ID ${id} inexistente` })
   }
 
   //TODO: desenvolver uma lógica pra validar todos os campos
@@ -122,8 +122,8 @@ const update = async (id, dados, res) => {
 
   await paymentForm.save();
   return res.status(200).send({
-    message: `Categoria ${id} atualizada com sucesso`,
-    data: category
+    message: `Método de pagamento ${id} atualizado com sucesso`,
+    data: paymentForm
   });
 }
 
@@ -134,7 +134,7 @@ const destroy = async (req, res) => {
     id = id ? id.toString().replace(/\D/g, '') : null;
     if (!id) {
       return res.status(400).send({
-        message: 'Informe uma categoria existente para ser deletada!!'
+        message: 'Informe um método de pagamento existente para ser deletado!!'
       });
     }
 
@@ -145,12 +145,12 @@ const destroy = async (req, res) => {
     });
 
     if (!paymentForm) {
-      return res.status(400).send({ message: `Não foi encontrada nenhuma categoria resgistrada com o ID ${id}` })
+      return res.status(400).send({ message: `Não foi encontrado nenhum método de pagamento com o ID ${id}` })
     }
 
     await paymentForm.destroy();
     return res.status(200).send({
-      message: `A categoria informada foi deletada com sucesso`
+      message: `Método de pagamento informado foi deletado com sucesso`
     })
   } catch (error) {
     return res.status(500).send({

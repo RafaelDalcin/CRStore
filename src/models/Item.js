@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config";
+import Category from "./Category"
 
 const Item = sequelize.define(
   'items',
@@ -25,5 +26,17 @@ const Item = sequelize.define(
     updatedAt: 'updated_at'
   }
 );
+
+Item.belongsTo(Category, { 
+  as: 'category', 
+  onDelete: 'NO ACTION',
+  onUpdate: 'NO ACTION',
+  foreignKey: {
+    name: 'idCategory',
+    field: 'id_category',
+    allowNull: false
+  }
+});
+
 
 export default Item;

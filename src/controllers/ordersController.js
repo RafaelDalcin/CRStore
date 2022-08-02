@@ -1,10 +1,10 @@
-import Item from "../models/Item";
+import Order from "../models/Order";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const getAll = async (req, res) => {
   try {
-    const response = await Item.findAll({
+    const response = await Order.findAll({
       order: [['id', 'ASC']]
     });
     return res.status(200).send({
@@ -33,27 +33,25 @@ const getById = async (req, res) => {
       });
     }
 
-    let item = await Item.findOne({
+    let order = await Order.findOne({
       where: {
         id
       }
     });
 
-    if (!item) {
+    if (!order) {
       return res.status(400).send({
-        message: `Não foi possível encontrar o método de pagamento com o ID ${id}`
+        message: `Não foi possível encontrar o pedido ${orderCode}`
       });
     }
 
-    return res.status(200).send(item);
+    return res.status(200).send(order);
   } catch (error) {
-    console.log('oi');
     return res.status(500).send({
       message: error.message
     })
   }
 }
-
 
 const persist = async (req, res) => {
   try {
@@ -73,15 +71,15 @@ const persist = async (req, res) => {
 
 const create = async (dados, res) => {
   try {
-    let { name, price, idCategory } = dados;
+    let { orderCode, idCustomer, idDeliveryman, idDiscountCoupon, idPaymentForm } = dados;
 
-    let response = await Item.create({
-      name, price, idCategory
+    let response = await Order.create({
+      orderCode, idCustomer, idDeliveryman, idDiscountCoupon, idPaymentForm
     });
 
     return res.status(200).send({
       type: 'success',
-      message: 'Método cadastrado com sucesso!',
+      message: 'Categoria cadastrada com sucesso!',
       data: response
     });
   } catch (error) {
@@ -94,25 +92,25 @@ const create = async (dados, res) => {
 }
 
 const update = async (id, dados, res) => {
-  let { name, price, idCategory  } = dados;
-  let item = await Item.findOne({
+  let { orderCode, idCustomer, idDeliveryman, idDiscountCoupon, idPaymentForm } = dados;
+  let order = await Order.findOne({
     where: {
       id
     }
   });
 
-  if (!item) {
-    return res.status(400).send({ type: 'error', message: `Método de pagamento com o ID ${id} inexistente` })
+  if (!order) {
+    return res.status(400).send({ type: 'error', message: `Categoria com o ID ${id} inexistente` })
   }
 
   //TODO: desenvolver uma lógica pra validar todos os campos
   //que vieram para atualizar e entao atualizar
-  Object.keys(dados).forEach(field => item[field] = dados[field]);
+  Object.keys(dados).forEach(field => order[field] = dados[field]);
 
-  await item.save();
+  await order.save();
   return res.status(200).send({
-    message: `Método de pagamento ${id} atualizado com sucesso`,
-    data: item
+    message: `Categoria ${id} atualizada com sucesso`,
+    data: order
   });
 }
 
@@ -123,23 +121,23 @@ const destroy = async (req, res) => {
     id = id ? id.toString().replace(/\D/g, '') : null;
     if (!id) {
       return res.status(400).send({
-        message: 'Informe um método de pagamento existente para ser deletado!!'
+        message: 'Informe uma categoria existente para ser deletada!!'
       });
     }
 
-    let item = await Item.findOne({
+    let order = await Order.findOne({
       where: {
         id,
       }
     });
 
-    if (!item) {
-      return res.status(400).send({ message: `Não foi encontrado nenhum método de pagamento com o ID ${id}` })
+    if (!order) {
+      return res.status(400).send({ message: `Não foi encontrada nenhuma categoria resgistrada com o ID ${id}` })
     }
 
-    await item.destroy();
+    await order.destroy();
     return res.status(200).send({
-      message: `Método de pagamento informado foi deletado com sucesso`
+      message: `A categoria informada foi deletada com sucesso`
     })
   } catch (error) {
     return res.status(500).send({

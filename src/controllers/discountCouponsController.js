@@ -1,15 +1,15 @@
-import Item from "../models/Item";
+import DiscountCoupon from "../models/DiscountCoupon";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const getAll = async (req, res) => {
   try {
-    const response = await Item.findAll({
+    const response = await DiscountCoupon.findAll({
       order: [['id', 'ASC']]
     });
     return res.status(200).send({
       type: 'success', // success, error, warning, info
-      message: 'Registros recuperados com sucesso', // mensagem para o front exibir
+      message: 'Cupons de descontos', // mensagem para o front exibir
       data: response // json com informações de resposta
     });
   } catch (error) {
@@ -33,19 +33,19 @@ const getById = async (req, res) => {
       });
     }
 
-    let item = await Item.findOne({
+    let discountCoupon = await DiscountCoupon.findOne({
       where: {
         id
       }
     });
 
-    if (!item) {
+    if (!discountCoupon) {
       return res.status(400).send({
-        message: `Não foi possível encontrar o método de pagamento com o ID ${id}`
+        message: `Não foi possível encontrar o cupom de desconto com o ID ${id}`
       });
     }
 
-    return res.status(200).send(item);
+    return res.status(200).send(discountCoupon);
   } catch (error) {
     console.log('oi');
     return res.status(500).send({
@@ -53,7 +53,6 @@ const getById = async (req, res) => {
     })
   }
 }
-
 
 const persist = async (req, res) => {
   try {
@@ -73,15 +72,28 @@ const persist = async (req, res) => {
 
 const create = async (dados, res) => {
   try {
-    let { name, price, idCategory } = dados;
+    let { discountCode, discountValue, discountType  } = dados;
 
-    let response = await Item.create({
-      name, price, idCategory
+    let discountCouponExists = await DiscountCoupon.findOne({
+      where: {
+        discountCode
+      }
+    });
+
+    if (discountCouponExists) {
+      return res.status(200).send({
+        type: 'error',
+        message: 'Já existe um cupom cadastrado com esse código!'
+      });
+    }
+
+    let response = await DiscountCoupon.create({
+      discountCode, discountValue, discountType
     });
 
     return res.status(200).send({
       type: 'success',
-      message: 'Método cadastrado com sucesso!',
+      message: 'Cupom cadastrado com sucesso!',
       data: response
     });
   } catch (error) {
@@ -94,25 +106,25 @@ const create = async (dados, res) => {
 }
 
 const update = async (id, dados, res) => {
-  let { name, price, idCategory  } = dados;
-  let item = await Item.findOne({
+  let { discountCode, discountValue, discountType } = dados;
+  let discountCoupon = await DiscountCoupon.findOne({
     where: {
       id
     }
   });
 
-  if (!item) {
-    return res.status(400).send({ type: 'error', message: `Método de pagamento com o ID ${id} inexistente` })
+  if (!discountCoupon) {
+    return res.status(400).send({ type: 'error', message: `Cupom de desconto com o ID ${id} inexistente` })
   }
 
   //TODO: desenvolver uma lógica pra validar todos os campos
   //que vieram para atualizar e entao atualizar
-  Object.keys(dados).forEach(field => item[field] = dados[field]);
+  Object.keys(dados).forEach(field => discountCoupon[field] = dados[field]);
 
-  await item.save();
+  await discountCoupon.save();
   return res.status(200).send({
-    message: `Método de pagamento ${id} atualizado com sucesso`,
-    data: item
+    message: `Cupom de desconto ${id} atualizado com sucesso`,
+    data: discountCoupon
   });
 }
 
@@ -123,23 +135,23 @@ const destroy = async (req, res) => {
     id = id ? id.toString().replace(/\D/g, '') : null;
     if (!id) {
       return res.status(400).send({
-        message: 'Informe um método de pagamento existente para ser deletado!!'
+        message: 'Informe um cupom de desconto existente para ser deletado!!'
       });
     }
 
-    let item = await Item.findOne({
+    let discountCoupon = await DiscountCoupon.findOne({
       where: {
         id,
       }
     });
 
-    if (!item) {
-      return res.status(400).send({ message: `Não foi encontrado nenhum método de pagamento com o ID ${id}` })
+    if (!discountCoupon) {
+      return res.status(400).send({ message: `Não foi encontrado nenhum cupom de desconto com o ID ${id}` })
     }
 
-    await item.destroy();
+    await discountCoupon.destroy();
     return res.status(200).send({
-      message: `Método de pagamento informado foi deletado com sucesso`
+      message: `Cupom de desconto informado foi deletado com sucesso`
     })
   } catch (error) {
     return res.status(500).send({
@@ -149,8 +161,8 @@ const destroy = async (req, res) => {
 }
 
 export default {
-  getById,
   getAll,
+  getById,
   create,
   destroy,
   persist,
