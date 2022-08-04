@@ -1,10 +1,10 @@
-import PaymentForm from "../models/PaymentForm";
+import PaymentMethod from "../models/PaymentMethod";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const getAll = async (req, res) => {
   try {
-    const response = await PaymentForm.findAll({
+    const response = await PaymentMethod.findAll({
       order: [['id', 'ASC']]
     });
     return res.status(200).send({
@@ -33,19 +33,19 @@ const getById = async (req, res) => {
       });
     }
 
-    let paymentForm = await PaymentForm.findOne({
+    let paymentMethod = await PaymentMethod.findOne({
       where: {
         id
       }
     });
 
-    if (!paymentForm) {
+    if (!paymentMethod) {
       return res.status(400).send({
         message: `Não foi possível encontrar o método de pagamento com o ID ${id}`
       });
     }
 
-    return res.status(200).send(paymentForm);
+    return res.status(200).send(paymentMethod);
   } catch (error) {
     return res.status(500).send({
       message: error.message
@@ -73,20 +73,20 @@ const create = async (dados, res) => {
   try {
     let { name } = dados;
 
-    let paymentFormExists = await PaymentForm.findOne({
+    let paymentMethodExists = await PaymentMethod.findOne({
       where: {
         name
       }
     });
 
-    if (paymentFormExists) {
+    if (paymentMethodExists) {
       return res.status(200).send({
         type: 'error',
         message: 'Já existe um método de pagamento cadastrado com esse nome!'
       });
     }
 
-    let response = await PaymentForm.create({
+    let response = await PaymentMethod.create({
       name
     });
 
@@ -106,24 +106,24 @@ const create = async (dados, res) => {
 
 const update = async (id, dados, res) => {
   let { name } = dados;
-  let paymentForm = await PaymentForm.findOne({
+  let paymentMethod = await PaymentMethod.findOne({
     where: {
       id
     }
   });
 
-  if (!paymentForm) {
+  if (!paymentMethod) {
     return res.status(400).send({ type: 'error', message: `Método de pagamento com o ID ${id} inexistente` })
   }
 
   //TODO: desenvolver uma lógica pra validar todos os campos
   //que vieram para atualizar e entao atualizar
-  Object.keys(dados).forEach(field => paymentForm[field] = dados[field]);
+  Object.keys(dados).forEach(field => paymentMethod[field] = dados[field]);
 
-  await paymentForm.save();
+  await paymentMethod.save();
   return res.status(200).send({
     message: `Método de pagamento ${id} atualizado com sucesso`,
-    data: paymentForm
+    data: paymentMethod
   });
 }
 
@@ -138,17 +138,17 @@ const destroy = async (req, res) => {
       });
     }
 
-    let paymentForm = await PaymentForm.findOne({
+    let paymentMethod = await PaymentMethod.findOne({
       where: {
         id,
       }
     });
 
-    if (!paymentForm) {
+    if (!paymentMethod) {
       return res.status(400).send({ message: `Não foi encontrado nenhum método de pagamento com o ID ${id}` })
     }
 
-    await paymentForm.destroy();
+    await paymentMethod.destroy();
     return res.status(200).send({
       message: `Método de pagamento informado foi deletado com sucesso`
     })

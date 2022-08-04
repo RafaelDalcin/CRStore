@@ -45,12 +45,17 @@ const getById = async (req, res) => {
       });
     }
 
-    return res.status(200).send(discountCoupon);
+    return res.status(200).send({
+      type: 'success', // success, error, warning, info
+      message: 'Cupons de descontos', // mensagem para o front exibir
+      data: discountCoupon // json com informações de resposta
+    });
   } catch (error) {
-    console.log('oi');
-    return res.status(500).send({
-      message: error.message
-    })
+    return res.status(200).send({
+      type: 'error',
+      message: 'Ops! Ocorreu um erro!',
+      data: error
+    });
   }
 }
 

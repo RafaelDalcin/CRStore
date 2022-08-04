@@ -5,7 +5,8 @@ import jwt from "jsonwebtoken";
 const getAll = async (req, res) => {
   try {
     const response = await Item.findAll({
-      order: [['id', 'ASC']]
+      order: [['id', 'ASC']],
+      include: ['category']
     });
     return res.status(200).send({
       type: 'success', // success, error, warning, info
@@ -45,12 +46,17 @@ const getById = async (req, res) => {
       });
     }
 
-    return res.status(200).send(item);
+    return res.status(200).send({
+      type: 'success', // success, error, warning, info
+      message: 'Registros recuperados com sucesso', // mensagem para o front exibir
+      data: item // json com informações de resposta
+    });
   } catch (error) {
-    console.log('oi');
-    return res.status(500).send({
-      message: error.message
-    })
+    return res.status(200).send({
+      type: 'error',
+      message: 'Ops! Ocorreu um erro!',
+      data: error
+    });
   }
 }
 
@@ -73,10 +79,10 @@ const persist = async (req, res) => {
 
 const create = async (dados, res) => {
   try {
-    let { name, price, idCategory } = dados;
+    let { name, price, idCategory, amount } = dados;
 
     let response = await Item.create({
-      name, price, idCategory
+      name, price, idCategory, amount
     });
 
     return res.status(200).send({
@@ -94,7 +100,7 @@ const create = async (dados, res) => {
 }
 
 const update = async (id, dados, res) => {
-  let { name, price, idCategory  } = dados;
+  let { name, price, idCategory, amount } = dados;
   let item = await Item.findOne({
     where: {
       id

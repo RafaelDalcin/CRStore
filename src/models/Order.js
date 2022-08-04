@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config";
 import DiscountCoupon from "./DiscountCoupon";
-import PaymentForm from "./PaymentForm";
+import PaymentMethod from "./PaymentMethod";
 import User from "./User";
 
 const Order = sequelize.define(
@@ -55,13 +55,13 @@ Order.belongsTo(DiscountCoupon, {
     allowNull: false
   }
 });
-Order.belongsTo(PaymentForm, { 
-  as: 'paymentform', 
+Order.belongsTo(PaymentMethod, { 
+  as: 'payment_method', 
   onDelete: 'NO ACTION',
   onUpdate: 'NO ACTION',
   foreignKey: {
-    name: 'idPaymentForm',
-    field: 'id_payment_form',
+    name: 'idPaymentMethod',
+    field: 'id_payment_method',
     allowNull: false
   }
 });

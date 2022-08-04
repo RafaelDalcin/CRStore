@@ -4,7 +4,7 @@ import Item from "./Item";
 import Order from "./Order";
 
 const OrderItem = sequelize.define(
-  'order_products',
+  'order_items',
   {
     id: {
       type: DataTypes.INTEGER,
@@ -29,7 +29,7 @@ const OrderItem = sequelize.define(
   }
 );
 
-OrderProduct.belongsTo(Order, { 
+OrderItem.belongsTo(Order, { 
   as: 'order', 
   onDelete: 'NO ACTION',
   onUpdate: 'NO ACTION',
@@ -40,7 +40,7 @@ OrderProduct.belongsTo(Order, {
   }
 });
 
-OrderProduct.belongsTo(Item, { 
+OrderItem.belongsTo(Item, { 
   as: 'item', 
   onDelete: 'NO ACTION',
   onUpdate: 'NO ACTION',

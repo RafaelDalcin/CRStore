@@ -1,8 +1,8 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config";
 
-const PaymentForm = sequelize.define(
-  'payment_form',
+const PaymentMethod = sequelize.define(
+  'payment_method',
   {
     id: {
       type: DataTypes.INTEGER,
@@ -22,4 +22,4 @@ const PaymentForm = sequelize.define(
   }
 );
 
-export default PaymentForm;
+export default PaymentMethod;

@@ -32,6 +32,6 @@ app.use((req, res) => {
   res.status(404).send('404 - Página não encontrada')
 });
 
-app.listen(3333, () => {
-  console.log(`Servidor do CRStore rodando na porta 3333!`);
+app.listen(5555, () => {
+  console.log(`Servidor do CRStore rodando na porta 5555!`);
 });

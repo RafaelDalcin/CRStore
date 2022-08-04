@@ -24,7 +24,6 @@ const getAll = async (req, res) => {
 const getById = async (req, res) => {
   try {
     let { id } = req.params;
-
     //garante que o id só vai ter NUMEROS;
     id = id.toString().replace(/\D/g, '');
     if (!id) {
@@ -45,7 +44,11 @@ const getById = async (req, res) => {
       });
     }
 
-    return res.status(200).send(category);
+    return res.status(200).send({
+      type: 'success', // success, error, warning, info
+      message: 'Registros recuperados com sucesso', // mensagem para o front exibir
+      data: category // json com informações de resposta
+    });
   } catch (error) {
     return res.status(500).send({
       message: error.message

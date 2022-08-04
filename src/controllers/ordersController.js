@@ -79,7 +79,7 @@ const create = async (dados, res) => {
 
     return res.status(200).send({
       type: 'success',
-      message: 'Categoria cadastrada com sucesso!',
+      message: 'Pedido enviado com sucesso!',
       data: response
     });
   } catch (error) {
@@ -100,7 +100,7 @@ const update = async (id, dados, res) => {
   });
 
   if (!order) {
-    return res.status(400).send({ type: 'error', message: `Categoria com o ID ${id} inexistente` })
+    return res.status(400).send({ type: 'error', message: `Pedido com o ID ${id} inexistente` })
   }
 
   //TODO: desenvolver uma lógica pra validar todos os campos
