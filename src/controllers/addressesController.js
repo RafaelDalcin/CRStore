@@ -41,7 +41,7 @@ const getById = async (req, res) => {
 
     if (!address) {
       return res.status(400).send({
-        message: `Não foi possível encontrar o método de pagamento com o ID ${id}`
+        message: `Não foi possível encontrar o endereço com o ID ${id}`
       });
     }
 
@@ -79,7 +79,7 @@ const create = async (dados, res) => {
 
     return res.status(200).send({
       type: 'success',
-      message: 'Categoria cadastrada com sucesso!',
+      message: 'Endereco cadastrada com sucesso!',
       data: response
     });
   } catch (error) {
@@ -100,7 +100,7 @@ const update = async (id, dados, res) => {
   });
 
   if (!address) {
-    return res.status(400).send({ type: 'error', message: `Categoria com o ID ${id} inexistente` })
+    return res.status(400).send({ type: 'error', message: `Endereço com o ID ${id} inexistente` })
   }
 
   //TODO: desenvolver uma lógica pra validar todos os campos
@@ -109,7 +109,7 @@ const update = async (id, dados, res) => {
 
   await address.save();
   return res.status(200).send({
-    message: `Categoria ${id} atualizada com sucesso`,
+    message: `Endereço ${id} atualizado com sucesso`,
     data: address
   });
 }
@@ -121,7 +121,7 @@ const destroy = async (req, res) => {
     id = id ? id.toString().replace(/\D/g, '') : null;
     if (!id) {
       return res.status(400).send({
-        message: 'Informe uma categoria existente para ser deletada!!'
+        message: 'Informe um Endereço existente para ser deletado!!'
       });
     }
 
@@ -132,12 +132,12 @@ const destroy = async (req, res) => {
     });
 
     if (!address) {
-      return res.status(400).send({ message: `Não foi encontrada nenhuma categoria resgistrada com o ID ${id}` })
+      return res.status(400).send({ message: `Não foi encontrado nenhum endereço resgistrado com o ID ${id}` })
     }
 
     await address.destroy();
     return res.status(200).send({
-      message: `A categoria informada foi deletada com sucesso`
+      message: `O endereço informado foi deletado com sucesso`
     })
   } catch (error) {
     return res.status(500).send({

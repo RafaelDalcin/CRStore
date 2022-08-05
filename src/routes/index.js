@@ -3,7 +3,7 @@ import itemsRoute from "./itemsRoute";
 import categoriesRoute from "./categoriesRoute";
 import paymentsMethodRoute from "./paymentsMethodRoute"
 import discountCouponRoute from "./discountCouponRoute";
-import addressRoute from "./addressRoute";
+import addressesRoute from "./addressesRoute";
 
 function Routes(app) {
 	usersRoute(app);
@@ -11,7 +11,7 @@ function Routes(app) {
 	categoriesRoute(app);
 	paymentsMethodRoute(app);
 	discountCouponRoute(app);
-	addressRoute(app);
+	addressesRoute(app);
 }
 
 export default Routes;
