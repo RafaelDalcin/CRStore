@@ -85,13 +85,14 @@ const login = async (req, res) => {
       { expiresIn: '1h' } //options ... em quanto tempo ele expira...
     );
 
+    let userRole = user.dataValues.role
     user.token = token;
     await user.save();
 
     return res.status(200).send({
       type: 'success',
       message: 'Bem-vindo! Login realizado com sucesso!',
-      token
+      token, userRole
     });
   } catch (error) {
     return res.status(200).send({
