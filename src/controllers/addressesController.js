@@ -1,6 +1,7 @@
 import Address from "../models/Address";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import User from "../models/User";
 
 const getAll = async (req, res) => {
   try {
@@ -47,12 +48,47 @@ const getById = async (req, res) => {
 
     return res.status(200).send(address);
   } catch (error) {
-    console.log('oi');
     return res.status(500).send({
       message: error.message
     })
   }
 }
+
+
+const getAddressByUserToken = async (req, res) => {
+  try {
+    let token = req.headers.authorization;
+    token = token.split(' ')[1] || null;
+    let decodedToken = jwt.decode(token);
+
+    let userAddress = await Address.findAll({
+      where: {
+        idUser: decodedToken.userId 
+      }
+    })
+
+    if (!userAddress) { 
+      return res.status(200).send({
+        type: 'error',
+        message: `Você não possui endereço cadastrado na CRSTORE!`,
+        data: [],
+      });
+    }
+
+    return res.status(200).send({
+      type: 'success',
+      message: 'carcule',
+      data: userAddress
+    });
+  } catch (error) {
+    return res.status(200).send({
+      type: 'error',
+      message: 'Ops! Ocorreu um erro!',
+      data: error.message
+    });
+  }
+}
+
 const persist = async (req, res) => {
   try {
     let { id } = req.body;
@@ -147,6 +183,7 @@ const destroy = async (req, res) => {
 }
 
 export default {
+  getAddressByUserToken,
   getAll,
   getById,
   create,

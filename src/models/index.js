@@ -15,7 +15,7 @@ import OrderItem  from "./OrderItem";
   // await Item.sync({ force: true })
   // await PaymentMethod.sync({ force: true })
   // await DiscountCoupon.sync({ force: true })
-  // await Addresses.sync({ force: true })
+  // await Address.sync({ force: true })
   // await Order.sync({ force: true }) 
   // await OrderItem.sync({ force: true})
 

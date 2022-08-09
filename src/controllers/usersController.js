@@ -2,6 +2,8 @@ import User from "../models/User";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
+// ------------------> FUNÇÕES PARA O ADMINSTRADOR <--------------------//
+
 const getAll = async (req, res) => {
   try {
     const response = await User.findAll({
@@ -20,6 +22,8 @@ const getAll = async (req, res) => {
     });
   }
 }
+
+// --------------> FUNÇÕES PARA O USUÁRIO <-------------- //
 
 const register = async (req, res) => {
   try {
