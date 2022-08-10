@@ -30,8 +30,8 @@ export default async (req, res, next) => {
     }
 
     let onlyAdminPaths = [
-      '/items/destroy',
-      '/items/persist'
+      '/destroy',
+      '/persist'
     ];
 
     const user = await User.findOne({

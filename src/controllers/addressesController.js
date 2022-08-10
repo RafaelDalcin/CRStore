@@ -1,90 +1,50 @@
 import Address from "../models/Address";
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import User from "../models/User";
+import usersController from "./usersController";
 
-const getAll = async (req, res) => {
+const get = async (req, res) => {
   try {
-    const response = await Address.findAll({
-      order: [['id', 'ASC']]
-    });
-    return res.status(200).send({
-      type: 'success', // success, error, warning, info
-      message: 'Registros recuperados com sucesso', // mensagem para o front exibir
-      data: response // json com informações de resposta
-    });
-  } catch (error) {
-    return res.status(200).send({
-      type: 'error',
-      message: 'Ops! Ocorreu um erro!',
-      data: error
-    });
-  }
-}
+    let id = req.params.id ? req.params.id.toString().replace(/\D/g, '') : null;
 
-const getById = async (req, res) => {
-  try {
-    let { id } = req.params;
+    let user = await usersController.getUserByToken(req.headers.authorization);
 
-    //garante que o id só vai ter NUMEROS;
-    id = id.toString().replace(/\D/g, '');
-    if (!id) {
-      return res.status(400).send({
-        message: 'Informe um ID válido para realizar a consulta!'
-      });
-    }
-
-    let address = await Address.findOne({
-      where: {
-        id
-      }
-    });
-
-    if (!address) {
-      return res.status(400).send({
-        message: `Não foi possível encontrar o endereço com o ID ${id}`
-      });
-    }
-
-    return res.status(200).send(address);
-  } catch (error) {
-    return res.status(500).send({
-      message: error.message
-    })
-  }
-}
-
-
-const getAddressByUserToken = async (req, res) => {
-  try {
-    let token = req.headers.authorization;
-    token = token.split(' ')[1] || null;
-    let decodedToken = jwt.decode(token);
-
-    let userAddress = await Address.findAll({
-      where: {
-        idUser: decodedToken.userId 
-      }
-    })
-
-    if (!userAddress) { 
+    if (!user) {
       return res.status(200).send({
         type: 'error',
-        message: `Você não possui endereço cadastrado na CRSTORE!`,
-        data: [],
+        message: 'Ocorreu um erro ao recuperar os seus dados'
+      })
+    }
+
+    if (!id) {
+      let response = await Address.findAll({ where: { idUser: user.id } });
+
+      return res.status(200).send({
+        type: 'success',
+        message: 'Registros carregados com sucesso',
+        data: response 
+      });
+    };
+
+    let response = await Address.findOne({ where: { id, idUser: user.id } });
+
+    if (!response) {
+      return res.status(200).send({
+        type: 'error',
+        message: `Nenhum registro com id ${id}`,
+        data: [] 
       });
     }
 
     return res.status(200).send({
       type: 'success',
-      message: 'carcule',
-      data: userAddress
+      message: 'Registro carregado com sucesso',
+      data: response 
     });
   } catch (error) {
     return res.status(200).send({
       type: 'error',
-      message: 'Ops! Ocorreu um erro!',
-      data: error.message
+      message: `Ops! Ocorreu um erro`,
+      error: error.message 
     });
   }
 }
@@ -183,9 +143,7 @@ const destroy = async (req, res) => {
 }
 
 export default {
-  getAddressByUserToken,
-  getAll,
-  getById,
+  get,
   create,
   destroy,
   persist,
