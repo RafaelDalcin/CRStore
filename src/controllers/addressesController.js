@@ -51,62 +51,67 @@ const get = async (req, res) => {
 
 const persist = async (req, res) => {
   try {
-    let { id } = req.body;
-    //caso nao tenha id, cria um novo registro
+    let id = req.params.id ? req.params.id.toString().replace(/\D/g, '') : null;
+
+    let user = await usersController.getUserByToken(req.headers.authorization);
+
+    if (!user) {
+      return res.status(200).send({
+        type: 'error',
+        message: 'Ocorreu um erro ao recuperar os seus dados'
+      })
+    }
+    
     if (!id) {
-      return await create(req.body, res)
+      return await create(req.body, res, user)
     }
 
-    return await update(id, req.body, res)
-  } catch (error) {
-    return res.status(500).send({
-      message: error.message
-    })
-  }
-}
-
-const create = async (dados, res) => {
-  try {
-    let { idUser, zipcode, city, uf, address } = dados;
-
-    let response = await Address.create({
-      idUser, zipcode, city, uf, address
-    });
-
-    return res.status(200).send({
-      type: 'success',
-      message: 'Endereco cadastrada com sucesso!',
-      data: response
-    });
+    return await update(id, req.body, res, user)
   } catch (error) {
     return res.status(200).send({
       type: 'error',
-      message: 'Ops! Ocorreu um erro!',
-      data: error.message
+      message: `Ops! Ocorreu um erro`,
+      error: error
     });
   }
 }
 
-const update = async (id, dados, res) => {
-  let { idUser, zipcode, city, uf, address } = dados;
-  let category = await Address.findOne({
-    where: {
-      id
-    }
+const create = async (dados, res, user) => {
+  let { address, city, zipcode, uf } = dados;
+
+  let response = await Address.create({
+    idUser: user.id,
+    address,
+    city,
+    uf,
+    zipcode
   });
 
-  if (!address) {
-    return res.status(400).send({ type: 'error', message: `Endereço com o ID ${id} inexistente` })
+  return res.status(200).send({
+    type: 'success',
+    message: `Cadastro realizado com sucesso`,
+    data: response 
+  });
+}
+
+const update = async (id, dados, res, user) => {
+  let response = await Address.findOne({ where: { id, idUser: user.id } });
+
+  if (!response) {
+    return res.status(200).send({
+      type: 'error',
+      message: `Nenhum registro com id ${id} para atualizar`,
+      data: [] 
+    });
   }
 
-  //TODO: desenvolver uma lógica pra validar todos os campos
-  //que vieram para atualizar e entao atualizar
-  Object.keys(dados).forEach(field => address[field] = dados[field]);
+  Object.keys(dados).forEach(field => response[field] = dados[field]);
 
-  await address.save();
+  await response.save();
   return res.status(200).send({
-    message: `Endereço ${id} atualizado com sucesso`,
-    data: address
+    type: 'sucess',
+    message: `Registro id ${id} atualizado com sucesso`,
+    data: response
   });
 }
 

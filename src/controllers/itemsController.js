@@ -79,10 +79,10 @@ const persist = async (req, res) => {
 
 const create = async (dados, res) => {
   try {
-    let { name, price, idCategory, amount } = dados;
+    let { name, price, idCategory, image, amount} = dados;
 
     let response = await Item.create({
-      name, price, idCategory, amount
+      name, price, idCategory, amount, image
     });
 
     return res.status(200).send({
