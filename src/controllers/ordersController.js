@@ -1,116 +1,115 @@
 import Order from "../models/Order";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import usersController from "./usersController";
 
-const getAll = async (req, res) => {
+const get = async (req, res) => {
   try {
-    const response = await Order.findAll({
-      order: [['id', 'ASC']]
-    });
+    let id = req.params.id ? req.params.id.toString().replace(/\D/g, '') : null;
+
+    let user = await usersController.getUserByToken(req.headers.authorization);
+
+    if (!user) {
+      return res.status(200).send({
+        type: 'error',
+        message: 'Ocorreu um erro ao recuperar os seus dados'
+      })
+    }
+
+    if (!id) {
+      let response = await Order.findAll({ where: { idCustomer: user.id,  } });
+
+      return res.status(200).send({
+        type: 'success',
+        message: 'Registros carregados com sucesso',
+        data: response 
+      });
+    };
+
+    let response = await Address.findOne({ where: { id, idCustomer: user.id } });
+
+    if (!response) {
+      return res.status(200).send({
+        type: 'error',
+        message: `Nenhum registro com id ${id}`,
+        data: [] 
+      });
+    }
+
     return res.status(200).send({
-      type: 'success', // success, error, warning, info
-      message: 'Registros recuperados com sucesso', // mensagem para o front exibir
-      data: response // json com informações de resposta
+      type: 'success',
+      message: 'Registro carregado com sucesso',
+      data: response 
     });
   } catch (error) {
     return res.status(200).send({
       type: 'error',
-      message: 'Ops! Ocorreu um erro!',
-      data: error
+      message: `Ops! Ocorreu um erro`,
+      error: error.message 
     });
-  }
-}
-
-const getById = async (req, res) => {
-  try {
-    let { id } = req.params;
-
-    //garante que o id só vai ter NUMEROS;
-    id = id.toString().replace(/\D/g, '');
-    if (!id) {
-      return res.status(400).send({
-        message: 'Informe um ID válido para realizar a consulta!'
-      });
-    }
-
-    let order = await Order.findOne({
-      where: {
-        id
-      }
-    });
-
-    if (!order) {
-      return res.status(400).send({
-        message: `Não foi possível encontrar o pedido ${orderCode}`
-      });
-    }
-
-    return res.status(200).send(order);
-  } catch (error) {
-    return res.status(500).send({
-      message: error.message
-    })
   }
 }
 
 const persist = async (req, res) => {
   try {
-    let { id } = req.body;
-    //caso nao tenha id, cria um novo registro
+    let id = req.params.id ? req.params.id.toString().replace(/\D/g, '') : null;
+
+    let user = await usersController.getUserByToken(req.headers.authorization);
+
+    if (!user) {
+      return res.status(200).send({
+        type: 'error',
+        message: 'Ocorreu um erro ao recuperar os seus dados'
+      })
+    }
+    
     if (!id) {
-      return await create(req.body, res)
+      return await create(req.body, res, user)
     }
 
-    return await update(id, req.body, res)
-  } catch (error) {
-    return res.status(500).send({
-      message: error.message
-    })
-  }
-}
-
-const create = async (dados, res) => {
-  try {
-    let { orderCode, idCustomer, idDeliveryman, idDiscountCoupon, idPaymentForm } = dados;
-
-    let response = await Order.create({
-      orderCode, idCustomer, idDeliveryman, idDiscountCoupon, idPaymentForm
-    });
-
-    return res.status(200).send({
-      type: 'success',
-      message: 'Pedido enviado com sucesso!',
-      data: response
-    });
+    return await update(id, req.body, res, user)
   } catch (error) {
     return res.status(200).send({
       type: 'error',
-      message: 'Ops! Ocorreu um erro!',
-      data: error.message
+      message: `Ops! Ocorreu um erro`,
+      error: error
     });
   }
 }
 
-const update = async (id, dados, res) => {
-  let { orderCode, idCustomer, idDeliveryman, idDiscountCoupon, idPaymentForm } = dados;
-  let order = await Order.findOne({
-    where: {
-      id
-    }
+const create = async (dados, res, user) => {
+  let { status, idDiscountCoupon, idPaymentMethod} = dados;
+
+  let response = await Address.create({
+    idCustomer: user.id,
+    idPaymentMethod,
+    idDiscountCoupon,
+    status
   });
 
-  if (!order) {
-    return res.status(400).send({ type: 'error', message: `Pedido com o ID ${id} inexistente` })
+  return res.status(200).send({
+    type: 'success',
+    message: `Cadastro realizado com sucesso`,
+    data: response 
+  });
+}
+
+const update = async (id, dados, res, user) => {
+  let response = await Order.findOne({ where: { id, idCustomer: user.id } });
+
+  if (!response) {
+    return res.status(200).send({
+      type: 'error',
+      message: `Nenhum registro com id ${id} para atualizar`,
+      data: [] 
+    });
   }
 
-  //TODO: desenvolver uma lógica pra validar todos os campos
-  //que vieram para atualizar e entao atualizar
-  Object.keys(dados).forEach(field => order[field] = dados[field]);
+  Object.keys(dados).forEach(field => response[field] = dados[field]);
 
-  await order.save();
+  await response.save();
   return res.status(200).send({
-    message: `Categoria ${id} atualizada com sucesso`,
-    data: order
+    type: 'sucess',
+    message: `Registro id ${id} atualizado com sucesso`,
+    data: response
   });
 }
 

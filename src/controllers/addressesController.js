@@ -1,5 +1,4 @@
 import Address from "../models/Address";
-import jwt from "jsonwebtoken";
 import usersController from "./usersController";
 
 const get = async (req, res) => {

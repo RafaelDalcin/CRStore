@@ -10,13 +10,13 @@ import OrderItem  from "./OrderItem";
 
 (async () => {
 
-  // await User.sync({ force: true })
-  // await Category.sync({ force: true })
-  // await Item.sync({ force: true })
-  // await PaymentMethod.sync({ force: true })
-  // await DiscountCoupon.sync({ force: true })
-  // await Address.sync({ force: true })
-  // await Order.sync({ force: true }) 
-  // await OrderItem.sync({ force: true})
+  await User.sync({ force: true })
+  await Category.sync({ force: true })
+  await Item.sync({ force: true })
+  await PaymentMethod.sync({ force: true })
+  await DiscountCoupon.sync({ force: true })
+  await Address.sync({ force: true })
+  await Order.sync({ force: true }) 
+  await OrderItem.sync({ force: true})
 
 })();

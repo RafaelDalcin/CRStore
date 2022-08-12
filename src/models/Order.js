@@ -12,11 +12,10 @@ const Order = sequelize.define(
       primaryKey: true,
       autoIncrement: true
     },
-    orderCode: {
+    status: {
       type: DataTypes.STRING,
-      allowNull: false,
-      field: "order_code"
-    },
+      allowNull: true
+    }
 
   },
   {
